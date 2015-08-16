@@ -92,7 +92,7 @@ namespace CardGames
 				int rndIdx  = rnd.Next(52 - i);
 				
 				Card temp = _cards[i];
-				_cards[i] = _cards{i + rndInx];
+				_cards[i] = _cards[i + rndInx];
 				_cards[i + rndIdx] = temp;
 			}
 			
