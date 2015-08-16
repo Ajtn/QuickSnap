@@ -10,6 +10,8 @@ namespace CardGames
         {
             Bitmap cards;
             cards = SwinGame.LoadBitmapNamed ("Cards", "Cards.png");
+			SwinGame.LoadFontNamed("GameFont", "Chunkfive.oft", 24);
+			SwinGame.LoadSoundEffectNamed("Slap", "Slap.wav");
             SwinGame.BitmapSetCellDetails (cards, 82, 110, 13, 5, 53);      // set the cells in the bitmap to match the cards
         }
 
@@ -19,6 +21,7 @@ namespace CardGames
 		/// <param name="myGame">The game object to update in response to events.</param>
 		private static void HandleUserInput(Snap myGame)
 		{
+
 			//Fetch the next batch of UI interaction
 			SwinGame.ProcessEvents();
 
@@ -26,6 +29,23 @@ namespace CardGames
 			{
 				myGame.Start ();
 			}
+			 if (myGame.IsStarted)
+ 			{
+ 				if ( SwinGame.KeyTyped (KeyCode.vk_LSHIFT) &&
+ 					SwinGame.KeyTyped (KeyCode.vk_RSHIFT))
+ 				{
+					 //TODO: add sound effects
+					 SwinGame.PlaySoundEffect("Slap");
+ 				}
+ 				else if (SwinGame.KeyTyped (KeyCode.vk_LSHIFT))
+ 				{
+ 				myGame.PlayerHit (0);
+ 				}
+ 				else if (SwinGame.KeyTyped (KeyCode.vk_RSHIFT))
+ 				{
+ 						myGame.PlayerHit (1);
+ 				}
+			 } 
 		}
 
 		/// <summary>
@@ -34,16 +54,16 @@ namespace CardGames
 		/// <param name="myGame">The details of the game -- mostly top card and scores.</param>
 		private static void DrawGame(Snap myGame)
 		{
-			SwinGame.ClearScreen(Color.White);
+			SwinGame.DrawBitmap("cardsBoard.png", 0, 0);
 
 			// Draw the top card
 			Card top = myGame.TopCard;
 			if (top != null)
 			{
-				SwinGame.DrawText ("Top Card is " + top.ToString (), Color.RoyalBlue, 0, 20);
-				SwinGame.DrawText ("Player 1 score: " + myGame.Score(0), Color.RoyalBlue, 0, 30);
-				SwinGame.DrawText ("Player 2 score: " + myGame.Score(1), Color.RoyalBlue, 0, 40);
-				SwinGame.DrawCell (SwinGame.BitmapNamed ("Cards"), top.CardIndex, 350, 50);
+				SwinGame.DrawText ("Top Card is " + top.ToString (), Color.RoyalBlue, "GameFont", 0, 20);
+				SwinGame.DrawText ("Player 1 score: " + myGame.Score(0), Color.RoyalBlue, "GameFont", 0, 30);
+				SwinGame.DrawText ("Player 2 score: " + myGame.Score(1), Color.RoyalBlue, "GameFont", 0, 40);
+				SwinGame.DrawCell (SwinGame.BitmapNamed ("Cards"), top.CardIndex, 512, 153);
 			}
 			else
 			{
@@ -51,12 +71,34 @@ namespace CardGames
 			}
 
 			// Draw the back of the cards... to represent the deck
-			SwinGame.DrawCell (SwinGame.BitmapNamed ("Cards"), 52, 160, 50);
+			SwinGame.DrawCell (SwinGame.BitmapNamed ("Cards"), 52, 155, 153);
 
 			//Draw onto the screen
 			SwinGame.RefreshScreen(60);
 		}
 
+		public void Shuffle()
+		{
+			for(int i = 0; i < 52; i++)
+				if(_cards[i].FaceUp)
+					_cards[i].TurnOver();
+					
+			Random rnd = new Random();
+			
+			//for each card (no need to shuffle last card)
+			for (int i = 0; i < 52; i++)
+			{
+				//pick a random index
+				int rndIdx  = rnd.Next(52 - i);
+				
+				Card temp = _cards[i];
+				_cards[i] = _cards{i + rndInx];
+				_cards[i + rndIdx] = temp;
+			}
+			
+			_topCard = 0;
+		}
+		
 		/// <summary>
 		/// Updates the game -- it should flip the cards itself once started!
 		/// </summary>
