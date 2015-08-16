@@ -137,19 +137,38 @@ namespace CardGames.GameLogic
 		/// Check if the top two cards' ranks match.
 		/// </summary>
 		public void PlayerHit (int player)
+		 {
+		 //TODO: consider deducting score for miss hits???
+		 if ( player >= 0 && player < _score.Length && IsStarted && _topCards[0] != null && _topCards[0].Rank == _topCards [1].Rank)
 		{
-			//TODO: consider deducting score for miss hits???
-			if ( player >= 0 && player < _score.Length &&  	// its a valid player
-				 IsStarted && 								// and the game is started
-				 _topCards [0] != null && _topCards [0].Rank == _topCards [1].Rank) // and its a match
-			{
-				_score[player]++;
-				_gameTimer.Stop ();
-			}
-
-			// stop the game...
-			_started = false;
+			_score[player]++;
 		}
+		else if ( player >= 0 && player < _score.Length)
+		{
+			_score[player]--;
+		}
+		 // stop the game...
+		 _started = false;
+		 }
+		 
+		 public void Shuffle()
+		 {
+			 for(int i = 0; i < 52; i++)
+			 {
+				if(_cards[i].FaceUp) _cards[i].TurnOver();
+			 }
+			Random rnd = new Random();
+			// for each card (no need to shuffle last card)
+			for(int i = 0; i < 52 - 1; i++)
+			{
+				// pick a random index
+				int rndIdx = rnd.Next(52 - i);
+				Card temp = _cards[i];
+				_cards[i] = _cards[i + rndIdx];
+				_cards[i + rndIdx] = temp;
+			}
+			_topCard = 0;
+		 }
 	
 		#region Snap Game Unit Tests
 		#if DEBUG

@@ -76,28 +76,6 @@ namespace CardGames
 			//Draw onto the screen
 			SwinGame.RefreshScreen(60);
 		}
-
-		public void Shuffle()
-		{
-			for(int i = 0; i < 52; i++)
-				if(_cards[i].FaceUp)
-					_cards[i].TurnOver();
-					
-			Random rnd = new Random();
-			
-			//for each card (no need to shuffle last card)
-			for (int i = 0; i < 52; i++)
-			{
-				//pick a random index
-				int rndIdx  = rnd.Next(52 - i);
-				
-				Card temp = _cards[i];
-				_cards[i] = _cards[i + rndInx];
-				_cards[i + rndIdx] = temp;
-			}
-			
-			_topCard = 0;
-		}
 		
 		/// <summary>
 		/// Updates the game -- it should flip the cards itself once started!
